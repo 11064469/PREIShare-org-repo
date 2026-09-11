@@ -8,7 +8,11 @@
 
 \- Git version: 2.55.0.windows.5
 
-\- Current branch: main
+\- Git user name: Dorcas Ilunga
+
+\- Git user email: 11064469@uvu.edu
+
+\- Current branch: onboarding-setup
 
 
 
@@ -18,6 +22,12 @@
 
 \- Team repository: https://github.com/EdTechForLearning/PREIShare-org-repo.git
 
+\- Local project path: C:\\Users\\11064469\\PREIShare-org-repo
+
+\- Clone method: HTTPS
+
+\- Authentication: Browser authentication succeeded
+
 
 
 \## Verification
@@ -26,9 +36,9 @@
 
 \### git status
 
-On branch main
+On branch onboarding-setup
 
-Your branch is up to date with 'origin/main'.
+Your branch is up to date with 'origin/onboarding-setup'.
 
 nothing to commit, working tree clean
 
@@ -36,45 +46,37 @@ nothing to commit, working tree clean
 
 \### git branch --show-current
 
-main
+onboarding-setup
 
 
 
-\### Remotes
+\### git remote -v
 
-origin: https://github.com/11064469/PREIShare-org-repo.git
+origin https://github.com/11064469/PREIShare-org-repo.git (fetch)
 
-upstream: https://github.com/EdTechForLearning/PREIShare-org-repo.git
+origin https://github.com/11064469/PREIShare-org-repo.git (push)
 
+upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git (fetch)
 
-
-
-
-
+upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git (push)
 
 
 
+\## Setup Checks
 
+\- Git identity configured: PASS
 
+\- GitHub sign-in works: PASS
 
+\- Fork created in my account: PASS
 
+\- Cloned my fork: PASS
 
+\- Origin points to my fork: PASS
 
+\- Upstream points to the team repository: PASS
 
+\- Working tree clean: PASS
 
-On Wed, Sep 9, 2026 at 9:54 PM Dorcas Ilunga <dorcask.kuwa@gmail.com> wrote:
-
-PS C:\\Users\\11064469\\PREIShare-org-repo> git remote -v
-
-origin  https://github.com/11064469/PREIShare-org-repo.git (fetch)
-
-origin  https://github.com/11064469/PREIShare-org-repo.git (push)
-
-upstream        https://github.com/EdTechLearning/PREIShare-org-repo.git (fetch)
-
-upstream        https://github.com/EdTechLearning/PREIShare-org-repo.git (push)
-
-PS C:\\Users\\11064469\\PREIShare-org-repo>
-
-
+\- No secrets, tokens, or private keys included: PASS
 
