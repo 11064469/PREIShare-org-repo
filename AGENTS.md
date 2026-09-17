@@ -111,3 +111,5 @@ Blank scaffold has no host-specific adapter yet. TanStack Start deploys via Vite
 - No database, authentication, Supabase, or SQL migration integration is currently verified.
 - Do not invent paths, packages, scripts, or services that have not been verified.
 - Keep AI-assisted changes small and review them before committing.
+
+- Before making changes, read `.cursor/rules/preishare.mdc` for PREIshare's durable project rules and `docs/onboarding/repo-map.md` for the verified repository structure.
