@@ -1,0 +1,13 @@
+# PREIShare Project Rules
+
+- Use TypeScript, React, TanStack Start/Router, Vite, and Tailwind CSS.
+- Follow the existing structure in `src/`.
+- Routes belong in `src/routes/`.
+- Reusable UI components belong in `src/components/`.
+- Use the existing styles and conventions in `src/styles.css`.
+- Do not edit `src/routeTree.gen.ts` manually because it is generated.
+- Do not invent files, folders, npm scripts, or backend services that are not in the repository.
+- Check `docs/onboarding/repo-map.md` before assuming project structure.
+- Never put secrets, API keys, or `.env` contents in project files.
+- Make small, focused changes and review them before committing.
+- Follow the instructions in `AGENTS.md` when using AI-assisted development.

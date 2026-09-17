@@ -100,3 +100,14 @@ Blank scaffold has no host-specific adapter yet. TanStack Start deploys via Vite
 3. Load matching Intent skills before Start/Router/Devtools changes
 4. When deploying, load the deployment skill and add the appropriate Nitro/host preset
 5. Add `.env` / typed env declarations only when real config is introduced
+
+## PREIShare Agent Memory
+
+- Use `docs/onboarding/repo-map.md` as the verified source for repository structure.
+- The current project uses TypeScript, React, TanStack Start/Router, Vite, and Tailwind CSS.
+- Main application code is under `src/`.
+- Routes are under `src/routes/` and reusable UI components are under `src/components/`.
+- Never edit `src/routeTree.gen.ts` manually.
+- No database, authentication, Supabase, or SQL migration integration is currently verified.
+- Do not invent paths, packages, scripts, or services that have not been verified.
+- Keep AI-assisted changes small and review them before committing.
