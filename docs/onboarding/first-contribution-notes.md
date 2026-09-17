@@ -12,6 +12,10 @@
 
 \- Checked `git status` to confirm no unrelated files were changed.
 
+\- Decision: ACCEPTED — The `CONTRIBUTORS.md` change matched the approved scope and passed review.
+
+\- Plan: `docs/onboarding/first-contribution-plan.md`
+
 
 
 \## Cycle 2 — Optional Micro-Change
