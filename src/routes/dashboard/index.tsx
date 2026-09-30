@@ -22,14 +22,14 @@ function DashboardOverview() {
 
       <section
         aria-label="Sample portfolio metrics"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        className="dashboard-stats-grid"
       >
         <StatsCard title="Total Portfolio Value" value="$200,000" hint="Sample data" />
         <StatsCard title="Open Deals" value={3} hint="Sample data" />
         <StatsCard title="Contributions YTD" value="$12,500" hint="Sample data" />
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="dashboard-overview-grid">
         <PortfolioSummary />
         <RecentActivity />
       </div>

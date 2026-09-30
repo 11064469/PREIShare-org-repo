@@ -35,7 +35,7 @@ export default function ProfileCard({
   return (
     <section
       aria-labelledby="profile-card-title"
-      className="feature-card rounded-lg border border-[var(--line)] p-5"
+      className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5"
     >
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -48,7 +48,7 @@ export default function ProfileCard({
           Sample data
         </p>
       </div>
-      <dl className="m-0 grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <dl className="dashboard-profile-fields m-0">
         {profileFields.map(({ label, key }) => (
           <div
             key={key}

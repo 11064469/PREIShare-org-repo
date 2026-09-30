@@ -4,11 +4,11 @@ import Sidebar from './Sidebar'
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
+    <div className="dashboard-shell">
       <Sidebar />
-      <div className="min-w-0">
+      <div className="dashboard-workspace">
         <Header />
-        <main className="mx-auto min-h-[calc(100vh-5rem)] w-full max-w-6xl bg-[var(--foam)] px-5 py-8 sm:px-8 sm:py-10 lg:px-12">
+        <main className="dashboard-main">
           {children}
         </main>
       </div>

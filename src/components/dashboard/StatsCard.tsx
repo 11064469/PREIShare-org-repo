@@ -6,7 +6,7 @@ interface StatsCardProps {
 
 export default function StatsCard({ title, value, hint }: StatsCardProps) {
   return (
-    <article className="feature-card rounded-lg border border-[var(--line)] p-5">
+    <article className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5">
       <h2 className="m-0 text-sm font-semibold text-[var(--sea-ink-soft)]">
         {title}
       </h2>

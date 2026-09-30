@@ -40,7 +40,7 @@ export default function PortfolioTable({
   return (
     <section
       aria-labelledby="portfolio-holdings-title"
-      className="feature-card rounded-lg border border-[var(--line)] p-5"
+      className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5"
     >
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -59,7 +59,12 @@ export default function PortfolioTable({
           No portfolio holdings to display.
         </p>
       ) : (
-        <div className="overflow-x-auto">
+        <div
+          className="dashboard-table-scroll overflow-x-auto"
+          role="region"
+          aria-label="Portfolio holdings table"
+          tabIndex={0}
+        >
           <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-[var(--line)] text-[var(--sea-ink-soft)]">

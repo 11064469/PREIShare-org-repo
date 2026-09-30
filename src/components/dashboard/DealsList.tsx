@@ -46,7 +46,7 @@ export default function DealsList({
   return (
     <section
       aria-labelledby="open-deals-title"
-      className="feature-card rounded-lg border border-[var(--line)] p-5"
+      className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5"
     >
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -65,7 +65,7 @@ export default function DealsList({
           No open deals are available right now.
         </p>
       ) : (
-        <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="dashboard-deals-grid m-0 list-none p-0">
           {deals.map((deal) => {
             const investmentLabel = deal.targetRaise
               ? 'Target raise'
@@ -76,10 +76,10 @@ export default function DealsList({
             return (
               <li
                 key={deal.name}
-                className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-4"
+                className="dashboard-deal-card rounded-md border border-[var(--line)] bg-[var(--surface)] p-4"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="m-0 text-base font-bold text-[var(--sea-ink)]">
+                  <h3 className="dashboard-deal-title m-0 text-base font-bold text-[var(--sea-ink)]">
                     {deal.name}
                   </h3>
                   <span

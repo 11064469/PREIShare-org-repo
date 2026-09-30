@@ -19,7 +19,7 @@ export default function PortfolioSummary({
   return (
     <section
       aria-labelledby="portfolio-summary-title"
-      className="feature-card rounded-lg border border-[var(--line)] p-5"
+      className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -36,7 +36,7 @@ export default function PortfolioSummary({
         {holdings.map((holding) => (
           <li
             key={holding.name}
-            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_5rem_7rem]"
+            className="dashboard-holding-row"
           >
             <span className="font-semibold text-[var(--sea-ink)]">
               {holding.name}
@@ -44,7 +44,7 @@ export default function PortfolioSummary({
             <span className="text-right text-sm text-[var(--sea-ink-soft)]">
               {holding.allocation}
             </span>
-            <span className="col-span-2 text-right text-sm font-semibold text-[var(--sea-ink)] sm:col-span-1">
+            <span className="dashboard-holding-value text-right text-sm font-semibold text-[var(--sea-ink)]">
               {holding.value}
             </span>
           </li>

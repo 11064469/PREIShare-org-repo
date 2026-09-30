@@ -21,7 +21,7 @@ export default function RecentActivity({
   return (
     <section
       aria-labelledby="recent-activity-title"
-      className="feature-card rounded-lg border border-[var(--line)] p-5"
+      className="feature-card dashboard-widget rounded-lg border border-[var(--line)] p-5"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -38,7 +38,7 @@ export default function RecentActivity({
         {activities.map((activity) => (
           <li
             key={activity.id}
-            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 first:pt-0 last:pb-0"
+            className="dashboard-activity-entry flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 first:pt-0 last:pb-0"
           >
             <span className="font-medium text-[var(--sea-ink)]">
               {activity.description}
