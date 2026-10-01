@@ -12,7 +12,7 @@ Keep route files as the source of truth for `/dashboard`, `/dashboard/portfolio`
 
 **Consequences**
 
-Each route stays next to its page component, while TanStack's generated route tree connects the files to the existing router. The shared dashboard layout can own the parent route while child pages render inside it. This preserves the project's existing routing approach and avoids maintaining the same route map in two places. The README's route paragraph still describes dashboard pages as future work; it should be aligned in a later documentation update, not treated as a description of the current routes.
+Each route stays next to its page component, while TanStack's generated route tree connects the files to the existing router. The shared dashboard layout can own the parent route while child pages render inside it. This preserves the project's existing routing approach and avoids maintaining the same route map in two places. README.md now documents these four current routes, keeping the first-run documentation aligned with the route files and dashboard information architecture.
 
 ## Shared AppShell Layout
 
@@ -117,3 +117,10 @@ Consider adding GitHub Actions as future automation for the checks agreed by the
 **Consequences**
 
 A future workflow could run consistent checks before changes are merged and make failures visible during review. The workflow should invoke real project scripts rather than assuming test or type-check commands exist today.
+
+## Project References
+
+- [docs/investor-dashboard-brief.md](investor-dashboard-brief.md) - Client requirements, investor goals, and scope boundaries.
+- [docs/dashboard-ia.md](dashboard-ia.md) - Route map, navigation, and dashboard information architecture.
+- [docs/component-plan.md](component-plan.md) - Component responsibilities and rules for the current shell.
+- [docs/verification-checklist.md](verification-checklist.md) - Browser, accessibility, responsive-layout, and build verification evidence, including the accepted Google Fonts finding.

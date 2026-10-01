@@ -15,6 +15,8 @@ The dashboard routes are:
 - `/dashboard/deals` - Deals
 - `/dashboard/profile` - Profile
 
+README.md now documents these same dashboard routes.
+
 All four routes use the shared `AppShell`, which places the `Sidebar`, `Header`, and main content region together. `Sidebar` contains `NavItems`; `NavItems` renders Home, Portfolio, Deals, and Profile links with exact active-route states. `Header` displays the PREIshare name and a title corresponding to the current dashboard route.
 
 The route content includes:
@@ -64,18 +66,27 @@ The verification checklist records a successful build.
 ## Known Limitations
 
 - Portfolio values, holdings, deal opportunities, recent activity, and profile details are mock/sample content, not real investor information.
-- Live portfolio or other investor data is not connected to a backend or database. The verification checklist marks live backend/database data as deferred because this sprint intentionally uses sample data.
-- Real authentication is not implemented; the verification checklist marks it deferred because it is outside the dashboard shell sprint's scope.
+- Real authentication is not implemented yet; it is deferred because authentication is outside this dashboard shell sprint's scope.
+- Live backend/portfolio data is not implemented yet; this sprint intentionally uses clearly labeled mock/sample data, with live backend data deferred.
+- pgvector-powered search is not implemented yet. The dashboard has no search or pgvector integration; this is a possible future capability only.
+- GitHub Actions CI is not implemented yet. No workflow is configured; CI is a possible future automation capability only.
 - The app does not provide real financial calculations, investment transactions, or production payment processing.
 - The verification checklist records an external Google Fonts request as **Fail, Severity: Low**. The global stylesheet requests fonts from `fonts.googleapis.com`, violating the no-external-network criterion even though it is not a dashboard data/API request. It is accepted as a low-severity blocker for stakeholder review. A follow-up can remove the external import and use an existing, local, or system font.
-- `README.md` still describes the dashboard routes as future work and says the root route is the only dashboard-related route. That documentation does not match the current route files and dashboard IA.
 
 ## Recommended Next-Sprint Work
 
-- Decide the future data source and data contract, then replace sample portfolio, deal, activity, and profile content with appropriately authorized live investor data.
-- Design and implement real authentication before exposing investor-specific information.
+- Evaluate and implement Supabase authentication as future work before exposing investor-specific information; Supabase authentication is not part of the current shell.
+- **Live portfolio/backend data:** Define a backend data contract and replace mock portfolio, balance, deal, activity, and profile information with validated investor data.
+- Evaluate pgvector-powered search for a defined future semantic-search use case, including data, access, and relevance requirements; neither pgvector nor search currently exists.
+- Add GitHub Actions CI as future automation for agreed checks such as the existing build; no GitHub Actions workflow currently exists.
 - Define and validate financial calculation rules before presenting production balances or returns.
 - Scope any investment transaction and payment workflow separately; none exists in this shell.
 - Resolve the Google Fonts finding by removing the external request or formally revising the no-external-network requirement.
-- Update the README route description so it reflects the dashboard routes that now exist.
 - Add automated checks for the verified routes, navigation states, responsive layouts, and build as the project grows.
+
+## Project References
+
+- [docs/investor-dashboard-brief.md](investor-dashboard-brief.md) - Client requirements and sprint scope.
+- [docs/dashboard-ia.md](dashboard-ia.md) - Dashboard routes, navigation, and information architecture.
+- [docs/component-plan.md](component-plan.md) - Component responsibilities and boundaries.
+- [docs/verification-checklist.md](verification-checklist.md) - Verification results, deferred capabilities, and the accepted Google Fonts finding.
