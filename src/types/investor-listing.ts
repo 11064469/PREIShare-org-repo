@@ -1,5 +1,7 @@
 import type { ListingStatus } from "./listing-status";
 import type { PropertyType } from "./property-type";
+import type { Address } from "./address";
+import type { FinancialSummary } from "./financial-summary";
 
 export interface InvestorListing {
   /** Identifies the listing; must not be empty. */
@@ -11,9 +13,6 @@ export interface InvestorListing {
   /** Provides the longer description of the investment listing. */
   summary: string
 
-  /** The asking price in whole US dollars. */
-  askingPrice: number
-
   /** The ISO-8601 date and time when the listing was created. */
   createdAt: string
 
@@ -22,4 +21,6 @@ export interface InvestorListing {
 
   status: ListingStatus
   propertyType: PropertyType
+  address: Address
+  financialSummary?: FinancialSummary
 }
