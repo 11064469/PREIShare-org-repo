@@ -1,7 +1,11 @@
 # Shared TypeScript Types
 
-`src/types/` is the shared home for PREIshare TypeScript domain types. Future interfaces, union types, nested object types, and related shared definitions will live here.
+This folder is the shared home for PREIshare investor-listing TypeScript types. [docs/domain/investor-listing-domain-brief.md](../../docs/domain/investor-listing-domain-brief.md) is the source of truth for PREIshare investor-listing business vocabulary and field rules.
 
-Investor-listing types will be added in later tutorial steps. Keeping shared types together helps different parts of the application use the same data contracts and agree on the shape of the data they exchange.
+Shared investor-listing types help TypeScript catch bad or incomplete listing data at compile time, before users see it. They can catch missing required fields, a missing price, inconsistent or invalid status values, and missing address information. Strict mode in `tsconfig.json` makes TypeScript refuse incomplete or loosely typed listing data instead of silently accepting it.
 
-Run `npm run typecheck` to check the project's TypeScript files without generating JavaScript output.
+Run this command to check the TypeScript contracts without producing application files:
+
+```bash
+npm run typecheck
+```
