@@ -2,6 +2,8 @@ import type { ListingStatus } from "./listing-status";
 import type { PropertyType } from "./property-type";
 import type { Address } from "./address";
 import type { FinancialSummary } from "./financial-summary";
+import type { InvestorContact } from "./investor-contact";
+import type { Ownership } from "./ownership";
 
 export interface InvestorListing {
   /** Identifies the listing; must not be empty. */
@@ -23,4 +25,16 @@ export interface InvestorListing {
   propertyType: PropertyType
   address: Address
   financialSummary?: FinancialSummary
+
+  /** One or more people associated with this listing. */
+  contacts: InvestorContact[];
+
+  /**
+   * Must match InvestorContact.id of one entry in contacts.
+   * TypeScript cannot fully enforce that the id exists in the array,
+   * so this remains a string reference.
+   */
+  primaryContactId: string;
+
+  ownership: Ownership;
 }
