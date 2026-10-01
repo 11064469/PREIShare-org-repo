@@ -1,3 +1,6 @@
+import type { ListingStatus } from "./listing-status";
+import type { PropertyType } from "./property-type";
+
 export interface InvestorListing {
   /** Identifies the listing; must not be empty. */
   id: string
@@ -16,4 +19,7 @@ export interface InvestorListing {
 
   /** The ISO-8601 date and time when the listing was last updated. */
   updatedAt: string
+
+  status: ListingStatus
+  propertyType: PropertyType
 }
