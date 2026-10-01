@@ -1,51 +1,65 @@
 # PREIshare Investor Listing Domain Brief
 
-## Purpose and Scope
+## Actors and Business Goals
 
-The current PREIshare documentation describes mock investment opportunities in the Deals area, not a separately specified entity named “investor listing.” For this planning brief, **investor listing** means one investment opportunity shown to an investor through `DealsList`. This mapping is an assumption based on the current product context; it should be confirmed before implementation.
+### Internal listing editor
 
-A listing is distinct from a portfolio holding, which represents an investment already shown in `PortfolioTable`, and from the investor profile shown in `ProfileCard`. The existing examples are mock data. This brief does not define a live listing workflow, backend record, investor-authored listing, or transaction.
+The internal listing editor needs one consistent listing definition for creating and maintaining accurate investor opportunities.
 
-## Supported Business Concepts and Rules
+### Investor
 
-- **Opportunity identity:** Each current deal opportunity has a `name` and a `locationOrAssetClass` display value.
-- **Location or asset class:** The examples use either a place (`Austin, TX`, `Denver, CO`) or an asset class (`Industrial`). The current model stores either as one string; the project does not define a complete asset-class list or a structured location format.
-- **Availability label:** The current status values are `Open`, `Closing Soon`, and `Waitlist`. They should be restricted values rather than arbitrary strings. The project defines these display labels but does not specify status-transition rules or what actions each status permits.
-- **Investment terms:** Each current opportunity supplies a target raise or a minimum investment. The existing `OpenDeal` shape requires exactly one: it rejects both values being present and also rejects neither being present.
-- **Collection:** Deals are supplied as a list (`MOCK_OPEN_DEALS` is an array of `OpenDeal`). The Deals view has an empty state, so a list may contain zero items.
-- **Separate portfolio records:** Portfolio holdings use their own property, type, invested amount, current value, and status fields. Those fields describe holdings and must not be assumed to be listing fields.
+The investor needs complete, understandable, consistent listing information to review an investment opportunity.
 
-Current sample monetary values are formatted strings such as `$2.4M`, `$10,000`, and `$5,000`. The project does not define a currency policy, numeric precision, range rules, or a canonical money representation. Treat any structured money representation as a future modeling decision, not an established requirement.
+PREIshare needs one shared investor-listing definition so internal editors and investors work from the same business concepts, and future application layers can apply the same validity rules consistently.
+
+## Investor Listing and Nested Groups
+
+An investor listing is the shared business description of an investment opportunity. It has listing identity and lifecycle information and contains four separate nested business groups:
+
+- **Address:** A complete property/location address. It is a group of address information, not a single general location label. The individual address parts have not been named in the supplied requirements, so their names and detailed rules remain unresolved.
+- **Financial Summary:** Financial information about the listing, including a numeric asking price and its currency. Other financial details are not specified here.
+- **Investor Contacts:** People and contact information investors can use to ask questions. The listing must contain at least one contact. The individual contact details have not been specified.
+- **Ownership:** Ownership information represented as its own nested group, separate from the listing's top-level identity and status. Its individual details and whether it is required or optional have not been specified.
+
+## Lifecycle Status
+
+Every listing must have exactly one lifecycle status. The complete allowed set is:
+
+- `draft`
+- `published`
+- `under_offer`
+- `sold`
+- `archived`
+
+No other status is allowed. The business requirements define the allowed lifecycle labels but do not define transition timing or who may make a transition.
 
 ## Required and Optional Information
 
-The existing `OpenDeal` model requires `name`, `locationOrAssetClass`, and `status`. It also requires exactly one investment-term alternative: `targetRaise` or `minimumInvestment`. Neither alternative is optional for a valid current deal, even though each is marked as unavailable (`never`) in the opposite branch of the existing type.
+The six validity requirements below determine what a listing must contain to be valid. The supplied requirements do not identify additional optional listing information. The individual component fields inside Address, Investor Contacts, and Ownership, and any Financial Summary details beyond asking price and currency, remain unspecified. Ownership group's requiredness is also unresolved.
 
-No optional listing attributes are specified in the reviewed project documentation or current opportunity model. Descriptions, images, addresses, dates, projected returns, and other financial metrics are not included in this inventory because the current project does not establish them.
+## Business Validity Rules
 
-**Assumption:** Required text values should be meaningful and non-empty. The current TypeScript model only uses `string`, and no minimum length or text validation rule is documented.
+A valid investor listing must have:
 
-## Restricted Values and Potential Nested Concepts
+- An ID that is present and not empty.
+- A title that is present and not empty.
+- Exactly one lifecycle status from the five allowed values listed above.
+- A complete property/location address.
+- An asking price expressed as a number and a currency.
+- At least one investor contact who can be used for questions.
 
-- **Listing status:** A future listing status type should be limited to `Open`, `Closing Soon`, or `Waitlist`, matching the current `DealStatus` values. Additional statuses require an explicit product decision.
-- **Investment terms:** These may deserve a nested `InvestmentTerms` concept with mutually exclusive variants for target raise and minimum investment. The existing model expresses this exclusive choice directly on `OpenDeal`; nesting it would be a future organization of the same rule, not a current structure.
-- **Location versus asset class:** These are different concepts currently combined in `locationOrAssetClass`. A future tagged choice could preserve which kind of value is present while allowing place names and class names to remain extensible. The project does not define the allowed set or detailed shape for either branch.
-- **Money amount:** A dedicated monetary concept could distinguish numeric amount from currency and display formatting. That is an assumption for future validation; the current sample model stores formatted strings and does not establish currency or precision rules.
-- **Listings collection:** Opportunities form an array. The existing collection is `MOCK_OPEN_DEALS`; no persistent collection or database representation is defined.
+These are business rules, not an implementation specification. The exact address parts, currency format and permitted currencies, contact details, ownership details, and any further constraints were not specified and must not be guessed.
 
-## Invalid Listing States TypeScript Should Eventually Reject
+## Out of Scope
 
-A future model should reject a listing with any of the following structural states:
+This planning step defines the investor-listing business domain only. It does not implement:
 
-- Missing `name`, `locationOrAssetClass`, or `status`.
-- A status outside `Open`, `Closing Soon`, and `Waitlist`.
-- Neither `targetRaise` nor `minimumInvestment` supplied.
-- Both `targetRaise` and `minimumInvestment` supplied together.
-
-The location-or-asset-class distinction can also be enforced if product requirements define a tagged choice. TypeScript alone cannot establish that a formatted monetary string is a valid, positive amount or enforce a currency policy; those rules need to be decided and validated separately. No type implementation is included in this planning document.
+- User interface work.
+- API work.
+- Database work.
+- TypeScript types.
 
 ## Project Context
 
-- [DealsList](../../src/components/dashboard/DealsList.tsx) and [PortfolioTable](../../src/components/dashboard/PortfolioTable.tsx) show the current mock opportunity and holding shapes.
-- [Investor dashboard brief](../investor-dashboard-brief.md), [dashboard information architecture](../dashboard-ia.md), and [component plan](../component-plan.md) define the current scope and component boundaries.
-- [Verification checklist](../verification-checklist.md) records that investor data is mock/sample data and that live backend data is deferred.
+- [Investor dashboard brief](../investor-dashboard-brief.md), [dashboard information architecture](../dashboard-ia.md), and [component plan](../component-plan.md) describe the current dashboard shell scope and component responsibilities.
+- [Verification checklist](../verification-checklist.md) records that current investor information is mock/sample data; it is not the source of the investor-listing business model.
