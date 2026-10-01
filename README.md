@@ -1,30 +1,35 @@
 # PREIshare Investor Dashboard Shell
 
-This repository contains the starter application for the PREIshare investor dashboard. It uses React, TypeScript, TanStack Start, and file-based routing. The current home page is a scaffold; it does not use live investment data or provide authentication or payment features.
+PREIshare is an investor dashboard shell built with React, TypeScript, and TanStack Start. It provides dashboard pages for reviewing portfolio, deal, and profile examples. Current investor information is mock/sample data; live backend data and authentication are not implemented in this shell.
 
-## Requirements
+## Prerequisites
 
-- Node.js and npm
+- Node.js
+- npm
 
-## Install and Run
+The project does not specify minimum Node.js or npm versions.
 
-From the repository root, install the project dependencies:
+## Installation
+
+From the repository root, install dependencies:
 
 ```bash
 npm install
 ```
 
-Start the development server:
+## Development
+
+Start the development server with the `dev` script:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+The server runs on port 3000. Open [http://localhost:3000](http://localhost:3000) and navigate to `/dashboard`.
 
-## Build
+## Production Build
 
-Create a production build with:
+Create a production build with the `build` script:
 
 ```bash
 npm run build
@@ -32,4 +37,16 @@ npm run build
 
 ## Routes
 
-Routes are defined as files in `src/routes`. The root route (`/`) is the only dashboard-related route in this starter. Dashboard area routes for the overview, portfolio, deals, and profile will be added in a later step.
+Dashboard routes are defined as files under `src/routes`:
+
+| Route | Page |
+| --- | --- |
+| `/dashboard` | Dashboard Home |
+| `/dashboard/portfolio` | Portfolio |
+| `/dashboard/deals` | Deals |
+| `/dashboard/profile` | Profile |
+
+## Project Documentation
+
+- [Sprint 3 handoff](docs/sprint3-handoff.md)
+- [Architecture decisions](docs/architecture-decisions.md)
