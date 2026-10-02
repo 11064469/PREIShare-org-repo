@@ -2,10 +2,10 @@
 
 This folder is the shared home for PREIshare investor-listing TypeScript types. [docs/domain/investor-listing-domain-brief.md](../../docs/domain/investor-listing-domain-brief.md) is the source of truth for PREIshare investor-listing business vocabulary and field rules.
 
-Shared investor-listing types help TypeScript catch bad or incomplete listing data at compile time, before users see it. They can catch missing required fields, a missing price, inconsistent or invalid status values, and missing address information. Strict mode in `tsconfig.json` makes TypeScript refuse incomplete or loosely typed listing data instead of silently accepting it.
-
-Run this command to check the TypeScript contracts without producing application files:
+From the project root, run:
 
 ```bash
 npm run typecheck
 ```
+
+A successful run means TypeScript found no errors in the valid project sources. `src/fixtures/invalid-listings.errors.ts` is intentionally excluded from this normal check because it contains examples that are supposed to fail. Those expected failures are documented in [docs/type-safety/expected-type-errors.md](../../docs/type-safety/expected-type-errors.md); the invalid file is not a valid fixture.
