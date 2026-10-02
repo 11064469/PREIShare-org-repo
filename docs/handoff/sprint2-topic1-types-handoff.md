@@ -2,7 +2,7 @@
 
 ## Client story recap
 
-PREIshare needed a dependable TypeScript contract for investor-listing data so later application layers would not create different listing shapes. This topic focused on compile-time modeling and verification rather than a complete listing feature. The why and implementation record lives in [docs/decisions/ADR-001-investor-listing-types.md](../decisions/ADR-001-investor-listing-types.md).
+PREIshare had real production problems with investor-listing data: missing prices, status strings spelled several different ways, and nested address fields that disappeared on some screens. The TypeScript work in this topic was designed to stop those broken shapes from being created in the first place. A strict `InvestorListing` model catches those invalid shapes at compile time before JavaScript runs and before users see them. This does not provide runtime validation; it is a compile-time safety check for the current project. The rationale and current implementation record live in [docs/decisions/ADR-001-investor-listing-types.md](../decisions/ADR-001-investor-listing-types.md).
 
 ## What we shipped this topic
 
@@ -52,7 +52,7 @@ Forms should import and consume the shared types from [src/types/index.ts](../..
 
 ### Supabase/PostgreSQL schema alignment
 
-The future database schema should be compared deliberately with the shared domain types rather than independently redefining listing fields. No Supabase or database schema is implied to exist yet.
+The future database implementation should mirror columns and constraints from [src/types/index.ts](../../src/types/index.ts), avoid independently redefining the `InvestorListing` shape, and document any difference between TypeScript optional fields and PostgreSQL `NULL`/`NOT NULL` behavior. Those optional-vs-NULL differences should be recorded in a follow-up ADR. No Supabase schema or migrations are implied to exist yet.
 
 ### API boundaries
 
