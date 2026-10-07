@@ -1,76 +1,76 @@
 # PREIshare Dashboard Routing Plan
 
-This project already has a simple route structure for the investor dashboard. The routes are organized in `src/routes` using TanStack Router file-based routing.
+This document is for the PAUL step: "Inventory the app and draft the dashboard routing plan."
 
-## Existing routes in the project
+## What Exists Now
 
-| Route file | URL | Purpose |
+The app already includes the starter routes expected by the tutorial. At this stage, we are only inventorying what exists and not claiming any dashboard pages are built yet.
+
+| Route file | URL | Notes |
 | --- | --- | --- |
-| `src/routes/index.tsx` | `/` | Landing page for the app. It introduces PREIshare and includes a button to open the dashboard. |
-| `src/routes/about.tsx` | `/about` | A separate informational page outside the dashboard shell. |
-| `src/routes/dashboard.tsx` | `/dashboard` | Shared dashboard layout wrapper. This file is the parent route for the dashboard area. |
-| `src/routes/dashboard/index.tsx` | `/dashboard` | The dashboard home page content. This is where the overview page lives. |
-| `src/routes/dashboard/portfolio.tsx` | `/dashboard/portfolio` | Portfolio page with sample holdings and portfolio data. |
-| `src/routes/dashboard/deals.tsx` | `/dashboard/deals` | Deals page with mock investment opportunities. |
-| `src/routes/dashboard/profile.tsx` | `/dashboard/profile` | Profile page with investor account information. |
+| `src/routes/__root.tsx` | `/` (root layout) | Root route wrapper for the app shell. |
+| `src/routes/index.tsx` | `/` | Starter landing page for the app. |
 
-## How the dashboard routes connect to the requirements
+The dashboard routes below are not part of the current inventory; they are planned for a later step.
 
-The requirements document describes four main dashboard areas:
+## Planned Dashboard Routes / Files to Create Later
 
-- Home Overview
-- Portfolio
-- Deals
-- Profile
+The investor screen requirements come from `docs/preishare-dashboard-requirements.md`. That document supports a shared dashboard shell and four main investor screens: a Home Overview, Portfolio, Deals, and Profile. It also calls for simple navigation between those screens.
 
-Those map directly to the file-based routes in `src/routes/dashboard`:
+The routes below are planned for later creation:
 
-- `dashboard.tsx` creates the shared layout for the dashboard.
-- `dashboard/index.tsx` holds the Home Overview content.
-- `dashboard/portfolio.tsx` matches the Portfolio requirement.
-- `dashboard/deals.tsx` matches the Deals requirement.
-- `dashboard/profile.tsx` matches the Profile requirement.
+- `src/routes/dashboard/route.tsx` — planned shared `/dashboard` layout containing the dashboard shell and `<Outlet />`
+- `src/routes/dashboard/index.tsx` — planned `/dashboard` home content
+- `src/routes/dashboard/portfolio.tsx` — planned `/dashboard/portfolio` placeholder
+- `src/routes/dashboard/deals.tsx` — planned `/dashboard/deals` placeholder
+- `src/routes/dashboard/profile.tsx` — planned `/dashboard/profile` placeholder
+- `src/routes/dashboard/activity.tsx` — optional placeholder route for `/dashboard/activity` if the team wants an extra section later, but this is not required by the brief
 
-This keeps the dashboard experience consistent: the same header/sidebar shell is reused while each page swaps in its own content.
-
-## Shared layout behavior
-
-`src/routes/dashboard.tsx` is the parent route for everything under `/dashboard`.
-
-It does three important things:
-
-1. It creates the `/dashboard` route.
-2. It renders the shared dashboard shell via `AppShell`.
-3. It uses `<Outlet />` so child routes can render inside the same layout.
-
-In plain terms, this file is the wrapper that keeps the sidebar and page structure in place while the dashboard pages change.
-
-## Home page content
-
-The dashboard home content lives in `src/routes/dashboard/index.tsx`.
-
-This route is the actual dashboard overview page. It contains the summary content, sample metrics, and supporting sections for the investor dashboard home screen. The route path is `/dashboard`, and it is the page people land on when they enter the dashboard.
-
-## Proposed URL tree
+## Proposed URL Tree
 
 ```text
 /
-├── /about
 ├── /dashboard
 │   ├── /dashboard/portfolio
 │   ├── /dashboard/deals
-│   └── /dashboard/profile
+│   ├── /dashboard/profile
+│   └── /dashboard/activity (optional placeholder)
 ```
+
+## Navigation Labels
+
+The table below maps the planned dashboard navigation to the investor requirements described in `docs/preishare-dashboard-requirements.md`.
+
+| Navigation Label | URL Path | Planned Route File | Requirement Source |
+| --- | --- | --- | --- |
+| Home | `/dashboard` | `src/routes/dashboard/index.tsx` | `docs/preishare-dashboard-requirements.md` |
+| Portfolio | `/dashboard/portfolio` | `src/routes/dashboard/portfolio.tsx` | `docs/preishare-dashboard-requirements.md` |
+| Deals | `/dashboard/deals` | `src/routes/dashboard/deals.tsx` | `docs/preishare-dashboard-requirements.md` |
+| Profile | `/dashboard/profile` | `src/routes/dashboard/profile.tsx` | `docs/preishare-dashboard-requirements.md` |
+
+## What Will Be Created Later
+
+The dashboard area is planned as a nested route group under `/dashboard`.
+
+- `src/routes/dashboard/route.tsx` would provide the shared layout for the dashboard shell.
+- `src/routes/dashboard/index.tsx` would hold the Home Overview content.
+- Each child route would render its own screen inside the same dashboard shell.
+
+This matches the requirements document: the app needs a persistent header, a navigation area, and a main content area for investor screens without building full feature logic yet.
+
+## Out of Scope for This Routing-Plan Step
+
+This step is only planning routes. It should not build page features, data models, or live functionality.
+
+Based on `docs/preishare-dashboard-requirements.md`, the routing plan should avoid implementing:
+
+- full page feature content beyond route placeholders
+- backend or database integration
+- real authentication
+- payment or transaction processing
+- production financial calculations
+- anything beyond the dashboard shell and route structure required for the sprint
 
 ## Summary
 
-The current routing structure already matches the project requirements well:
-
-- `/dashboard` is the dashboard home overview
-- `/dashboard/portfolio` is the portfolio screen
-- `/dashboard/deals` is the deal screen
-- `/dashboard/profile` is the profile screen
-- `dashboard.tsx` provides the shared dashboard shell
-- `dashboard/index.tsx` contains the home-page content
-
-This is a clean, beginner-friendly structure that keeps the dashboard organized and easy to extend later.
+The app currently has only the basic starter routes. The planned dashboard work should be created later as a nested `/dashboard` route group, with a shared layout and separate screens for Home, Portfolio, Deals, and Profile. This keeps the work aligned with the requirements brief and avoids building out-of-scope functionality during the planning step.
