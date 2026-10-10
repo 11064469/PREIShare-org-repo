@@ -1,108 +1,91 @@
 # PREIshare Dashboard Responsive QA Checklist
 
 ## Test details
-## Test details
 
-- Tester: Dorcas Ilunga
-- Testing date: October 9, 2026
-- Dashboard URL: http://localhost:3001/dashboard
+- **Tester:** Dorcas Ilunga
+- **Testing date:** October 9, 2026
+- **Dashboard URL:** http://localhost:3001/dashboard
+- **Testing method:** Manual browser testing using responsive DevTools
+- **Viewports tested:** 375px mobile, 768px tablet, 1280px desktop
+- **Overall result:** 17 of 17 critical checks passed
+
 ## Mobile — 375px
 
-**Observation:** Five checks passed. Spacing/readability was not separately tested.
+**Observation:** All seven critical mobile checks passed. The dashboard displayed correctly, the desktop sidebar was hidden, and mobile navigation worked. No horizontal scrolling, text clipping, or spacing problems were observed.
 
-### Navigation
-Status: Pass  
-Evidence: Mobile menu and navigation worked.
+| ID | Critical check | Status | Evidence |
+|---|---|---|---|
+| M1 | No horizontal scrolling | Pass | No horizontal scrolling observed at 375px. |
+| M2 | Header visible and usable | Pass | Header remained visible and usable. |
+| M3 | Desktop sidebar hidden | Pass | Desktop sidebar was hidden at mobile width. |
+| M4 | Mobile menu opens and closes | Pass | Mobile menu opened and closed successfully. |
+| M5 | Metric cards stack vertically | Pass | Metric cards displayed in a vertical stack. |
+| M6 | PortfolioSummary and RecentActivity fit | Pass | Both sections fit within the mobile viewport. |
+| M7 | Text and spacing readable; no clipping | Pass | Text was readable, spacing was appropriate, and no content was clipped. |
 
-### Horizontal scrolling
-Status: Pass  
-Evidence: No horizontal scrolling observed.
-
-### Metric cards
-Status: Pass  
-Evidence: Metric cards fit the mobile viewport.
-
-### Portfolio summary
-Status: Pass  
-Evidence: PortfolioSummary fit the mobile viewport.
-
-### Recent activity
-Status: Pass  
-Evidence: RecentActivity fit the mobile viewport.
-
-### Spacing
-Status: Pass  
-Evidence: Text and spacing were not separately verified.
+**Mobile result:** 7/7 Pass.
 
 ## Tablet — 768px
 
-**Observation:** All six reported responsive checks passed.
+**Observation:** All five critical tablet checks passed. Navigation remained usable, metric cards displayed in two columns, and the dashboard content fit the viewport.
 
-### Navigation
-Status: Pass  
-Evidence: Header and navigation were usable; mobile menu/sidebar behavior worked.
+| ID | Critical check | Status | Evidence |
+|---|---|---|---|
+| T1 | No horizontal scrolling | Pass | No horizontal scrolling observed at 768px. |
+| T2 | Header and navigation usable | Pass | Header and navigation were usable. |
+| T3 | Mobile navigation works; desktop sidebar hidden | Pass | Mobile navigation worked and desktop sidebar remained hidden. |
+| T4 | Metric cards display in two columns | Pass | Metric cards displayed in a two-column layout. |
+| T5 | Widgets and spacing fit correctly | Pass | Dashboard widgets fit and spacing was readable. |
 
-### Horizontal scrolling
-Status: Pass  
-Evidence: No horizontal scrolling observed.
-
-### Metric cards
-Status: Pass  
-Evidence: Metric cards fit correctly.
-
-### Portfolio summary
-Status: Pass  
-Evidence: PortfolioSummary fit correctly.
-
-### Recent activity
-Status: Pass  
-Evidence: RecentActivity fit correctly.
-
-### Spacing
-Status: Pass  
-Evidence: Text and spacing were readable.
+**Tablet result:** 5/5 Pass.
 
 ## Desktop — 1280px
 
-**Observation:** All six reported responsive checks passed.
+**Observation:** All five critical desktop checks passed. Desktop navigation worked, MobileNav was hidden, and the dashboard layout displayed correctly.
 
-### Navigation
-Status: Pass  
-Evidence: Header and navigation were usable; sidebar/navigation worked.
+| ID | Critical check | Status | Evidence |
+|---|---|---|---|
+| D1 | No horizontal scrolling | Pass | No horizontal scrolling observed at 1280px. |
+| D2 | Header and sidebar usable | Pass | Header and desktop sidebar were usable. |
+| D3 | MobileNav hidden | Pass | MobileNav was hidden at desktop width. |
+| D4 | Metric cards display in desktop layout | Pass | Metric cards displayed correctly in the desktop layout. |
+| D5 | Widgets and spacing fit correctly | Pass | Dashboard widgets and spacing fit the desktop viewport. |
 
-### Horizontal scrolling
-Status: Pass  
-Evidence: No horizontal scrolling observed.
-
-### Metric cards
-Status: Pass  
-Evidence: Metric cards fit correctly.
-
-### Portfolio summary
-Status: Pass  
-Evidence: PortfolioSummary fit correctly.
-
-### Recent activity
-Status: Pass  
-Evidence: RecentActivity fit correctly.
-
-### Spacing
-Status: Pass  
-Evidence: Text and spacing were readable.
+**Desktop result:** 5/5 Pass.
 
 ## Targeted fix log
 
-| Screen size | Observed issue | Targeted fix | Verification |
-|---|---|---|---|
-| 375px mobile | No failures reported in completed checks | No code changes required | Five checks passed; spacing pending |
-| 768px tablet | No failures reported | No code changes required | All six checks passed |
-| 1280px desktop | No failures reported | No code changes required | All six checks passed |
+The responsive QA pass did not identify any failures in the 17 critical checks. Therefore, no targeted layout fixes were necessary.
 
-No targeted fix prompts were necessary because no failures were reported. No QA-driven code changes or fix retests were performed.
+| Breakpoint | Observed issue | Files touched for QA fixes | Targeted prompt | Retest result |
+|---|---|---|---|---|
+| 375px mobile | None observed | None | Not required | Not applicable — no fix made; 7/7 checks passed |
+| 768px tablet | None observed | None | Not required | Not applicable — no fix made; 5/5 checks passed |
+| 1280px desktop | None observed | None | Not required | Not applicable — no fix made; 5/5 checks passed |
+
+**QA-driven code changes:** None.
+
+**Targeted fix prompts:** None required because no responsive failures were reported.
+
+**Retesting after fixes:** Not applicable because no fixes were made.
+
+**Known responsive limitations:** None identified in the 17 checks performed at the three tested widths. Other viewport widths were not evaluated as part of this QA pass.
 
 ## Stakeholder handoff sign-off
 
-- Handoff status: QA complete — ready for stakeholder review
-- Stakeholder: Pending stakeholder review
-- Sign-off date: Pending stakeholder approval
-- Notes: All responsive QA checks passed at 375px, 768px, and 1280px. No responsive issues were reported, so no code fixes or retests were required.
+- **QA tester:** Dorcas Ilunga
+- **QA completion date:** October 9, 2026
+- **QA status:** Complete — 17/17 critical checks passed
+- **Handoff status:** Ready for stakeholder review
+- **Stakeholder approval:** Pending
+- **Stakeholder sign-off date:** Pending approval
+
+### Final QA summary
+
+Manual responsive QA was completed at 375px, 768px, and 1280px. All 17 critical checks passed.
+
+The dashboard navigation, sidebar visibility, mobile menu, metric card layouts, PortfolioSummary, RecentActivity, text readability, and spacing behaved as expected at the tested viewport widths.
+
+No responsive failures were reported. No targeted code fixes or post-fix retests were required.
+
+**Final status: Responsive QA complete and ready for stakeholder review.**
