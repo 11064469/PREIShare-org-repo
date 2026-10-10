@@ -10,26 +10,26 @@ Use this checklist to manually verify the dashboard at each viewport width. Reco
 
 ## Mobile — 375px
 
-Observation: Not tested; no Pass/Fail result recorded.
+Observation: Five checks were confirmed as passing. Spacing remains untested.
 
 ### Navigation
-Status: Not tested
+Status: Pass
 Evidence:
 
 ### Horizontal scrolling
-Status: Not tested
+Status: Pass
 Evidence:
 
 ### Metric cards
-Status: Not tested
+Status: Pass
 Evidence:
 
 ### Portfolio summary
-Status: Not tested
+Status: Pass
 Evidence:
 
 ### Recent activity
-Status: Not tested
+Status: Pass
 Evidence:
 
 ### Spacing
