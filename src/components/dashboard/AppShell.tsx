@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import Header from './Header'
+import MobileNav from './MobileNav'
+import Sidebar from './Sidebar'
 
 type AppShellProps = {
   children: ReactNode
@@ -19,12 +21,15 @@ export default function AppShell({
       <Header title={title} subtitle={subtitle} userName={userName} />
 
       <div className="mx-auto flex w-full max-w-7xl">
-        <aside
-          className="hidden w-64 shrink-0 border-r border-slate-200 bg-white lg:block"
-          aria-label="Dashboard navigation placeholder"
-        />
+        <Sidebar />
 
-        <main className="flex-1 p-6">{children}</main>
+        <div className="flex-1">
+          <div className="px-4 pt-4 lg:hidden">
+            <MobileNav />
+          </div>
+
+          <main className="p-6">{children}</main>
+        </div>
       </div>
     </div>
   )
