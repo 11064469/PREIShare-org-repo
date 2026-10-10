@@ -1,11 +1,11 @@
 # PREIshare Dashboard Responsive QA Checklist
 
 ## Test details
+## Test details
 
-- **Tester:** Dorcas Ilunga
-- **Testing date:** October 9, 2026
-- **Dashboard URL:** Confirm the exact URL used during testing (http://localhost:3000/dashboard or http://localhost:3001/dashboard)
-
+- Tester: Dorcas Ilunga
+- Testing date: October 9, 2026
+- Dashboard URL: http://localhost:3001/dashboard
 ## Mobile — 375px
 
 **Observation:** Five checks passed. Spacing/readability was not separately tested.
