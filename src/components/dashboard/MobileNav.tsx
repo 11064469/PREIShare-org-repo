@@ -4,9 +4,9 @@ import { navConfig } from '../layout/navConfig'
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false)
-  const pathname = useLocation({
-    select: (state) => state.location.pathname,
-  })
+ const pathname = useLocation({
+  select: (location) => location.pathname,
+})
 
   const toggleLabel = isOpen ? 'Close menu' : 'Open menu'
 

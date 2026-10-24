@@ -3,8 +3,8 @@ import { navConfig } from '../layout/navConfig'
 
 export default function Sidebar() {
   const pathname = useLocation({
-    select: (state) => state.location.pathname,
-  })
+  select: (location) => location.pathname,
+})
 
   return (
     <aside
