@@ -1,50 +1,85 @@
-# Property Listings Schema Design
+# PREIshare — Property Listings Data Model and Auth Boundaries
 
-This is a proposed design based only on the sponsor authentication and listings brief and the Supabase environment checklist. It is not a migration or an implementation of authentication or row-level security (RLS).
+**Status:** Design proposal for the next PostgreSQL migration and RLS implementation step. No SQL migrations or runtime behavior are implemented by this document.
 
-## 1. Proposed Property Listings Fields
+**Source requirements:** `docs/requirements/sponsor-auth-and-listings-brief.md` and `docs/setup/supabase-env-checklist.md`. The requirements brief explicitly requires sponsor sign-in, protected sessions, PostgreSQL-backed listing reads, sponsor-specific authorization, and server-only secrets. The concrete listing attributes and write permissions below are **proposed design decisions requested for migration planning**, not additional confirmed client requirements.
 
-The brief requires property listings to be stored in PostgreSQL and tied to the sponsor authorized to access them. It does not specify any listing details or business attributes. Accordingly, no property-specific business columns are proposed until those requirements are defined.
+## 1. Proposed `property_listings` Fields
 
-| Field | PostgreSQL type | Required? | Purpose |
-|---|---|---:|---|
-| `id` | `uuid` | Yes | Primary key identifying one listing. **Technical design assumption:** use a UUID primary key. |
-| `sponsor_id` | `uuid` | Yes | Ownership field referencing the sponsor's Supabase Auth user ID in `auth.users(id)`. **Technical design assumption:** store the owner ID as a non-null UUID foreign key. |
+| Column | PostgreSQL type | Nullability | Purpose / design note |
+|---|---|---|---|
+| `id` | `uuid` | `NOT NULL` | Primary key; generate a UUID when a listing is created. |
+| `sponsor_id` | `uuid` | `NOT NULL` | Owner / authorized sponsor; foreign key to `auth.users(id)`. |
+| `title` | `text` | `NOT NULL` | Human-readable property listing title. |
+| `address` | `text` | `NULL` | Street address; optional pending privacy and address requirements. |
+| `city` | `text` | `NOT NULL` | City of the property. |
+| `region` | `text` | `NULL` | State, province, or region, where applicable. |
+| `postal_code` | `text` | `NULL` | Postal or ZIP code; text preserves leading zeros and international formats. |
+| `country` | `text` | `NOT NULL` | Country of the property; precise format to be confirmed. |
+| `price` | `numeric(14,2)` | `NULL` | Proposed monetary amount; currency and meaning (asking price, valuation, etc.) are unresolved. If present, require nonnegative values. |
+| `status` | `text` | `NOT NULL` | Listing status; allowable values and default must be approved before migration. |
+| `created_at` | `timestamptz` | `NOT NULL` | Creation timestamp, populated by the database. |
+| `updated_at` | `timestamptz` | `NOT NULL` | Last-modified timestamp, maintained by trusted database logic. |
 
-**Technical design assumptions:** The table will have a primary key named `id`, and `sponsor_id` will be non-null. The brief does not prescribe key names, types, or foreign-key deletion behavior; the UUID choices follow the Supabase Auth user ID relationship and should be confirmed before implementation.
+**Proposed constraints:** `id` is the primary key; `sponsor_id` references `auth.users(id)`; `price` must be nonnegative when present. The database should assign `created_at` and maintain `updated_at` so the browser cannot forge audit timestamps. The precise status values, currency representation, and Auth-user deletion behavior remain open questions; do not invent them in the migration.
 
-**Not specified by the brief:** Listing attributes (for example, what property information sponsors need to see), whether any attributes are required, and whether timestamps or listing status are needed. No such fields are included here.
+**Design assumptions:** One listing belongs to one sponsor, represented by `sponsor_id`. Required `title`, `city`, `country`, and `status` are proposed to make a minimally usable listing; the brief itself does not specify those fields or their nullability. The migration should confirm these assumptions rather than treat them as established client requirements.
 
 ## 2. Ownership Relationship to Supabase Auth
 
-Each listing's `sponsor_id` is intended to reference `auth.users.id`, the UUID of the Supabase Auth user who owns the listing. This is a foreign-key relationship: a listing's owner must correspond to an Auth user, and the database—not a browser-supplied sponsor identifier—provides referential integrity.
+- `property_listings.sponsor_id` is a required UUID foreign key referencing `auth.users(id)`.
+- The server obtains the signed-in user's identity from the validated Supabase Auth session. A browser-supplied `sponsor_id` is not proof of authorization.
+- For sponsor-scoped database operations, PostgreSQL evaluates the authenticated request context using `auth.uid()` and compares it with `property_listings.sponsor_id`.
+- Proposed server create actions assign `sponsor_id` from the authenticated session, not from a form field. RLS independently verifies the inserted row's owner.
+- A one-owner-per-listing model is an assumption. Shared viewing permissions, a distinct sponsor role/approval model, and assignment of existing listings require further requirements before implementation.
+- The behavior when an `auth.users` record is deleted (restrict, cascade, or reassignment) is unresolved; do not select an `ON DELETE` behavior without a decision.
 
-For an authenticated request, Supabase makes the user's ID available to PostgreSQL through the request's verified authentication context (commonly `auth.uid()`). A sponsor's own listings are the rows whose `sponsor_id` equals that authenticated user ID. The application must not decide ownership by trusting an ID sent by the browser or by filtering results only in React.
+## 3. Proposed Row Level Security (RLS) Rules
 
-The brief does not define how an Auth user is designated or approved as a PREIshare sponsor, how listing ownership is initially assigned, or what should happen to listings if an Auth user is deleted. Those decisions need to be established before implementation; authentication alone should not be treated as proof of any additional sponsor role or approval.
+Enable RLS on `property_listings`. Policies apply to the `authenticated` database role; anonymous users receive no listing access. The owner checks below are the **proposed own-row policies** for migration planning. They do not establish that the client has approved sponsor write features.
 
-## 3. Proposed Row Level Security Rules
-
-RLS must be enabled for the listings table, with policies that enforce access in PostgreSQL. The following reflects the permissions actually described in the brief:
-
-- **Read:** An authenticated sponsor may read a listing only when its `sponsor_id` matches the authenticated user's ID (`auth.uid()`). The policy should apply to the authenticated database role and reject a missing authenticated user ID.
-- **Create:** The brief does not require or authorize sponsors to create listings. No sponsor insert permission should be granted unless that behavior is separately specified. If it is later authorized, PostgreSQL must verify that the new row's `sponsor_id` matches the authenticated user's ID; it must not accept ownership based only on a browser-provided value.
-- **Update:** The brief does not require or authorize sponsors to update listings. No sponsor update permission should be granted unless that behavior is separately specified. If later authorized, PostgreSQL must check ownership for both the existing row and the resulting row, so an owner cannot change a listing's `sponsor_id` to another user.
-- **Delete:** The brief does not require or authorize sponsors to delete listings. No sponsor delete permission should be granted unless that behavior is separately specified.
-- **Ownership verification:** PostgreSQL compares `sponsor_id` with the authenticated request's user ID, rather than relying on React filtering or a sponsor ID supplied by the caller.
-- **Attempt to access another sponsor's listing:** A query returns no rows for listings the user does not own; a direct operation against another sponsor's row is blocked by RLS. The application must not expose that data. RLS is the security boundary even if a caller bypasses the dashboard UI.
-
-The brief requires sponsor-specific authorization but does not define an additional sponsor approval/role mechanism. The ownership match above enforces per-user listing ownership; the authoritative process for assigning listings to approved sponsors remains an open requirement.
-
-## 4. Server vs. Browser Operations
-
-| Operation or value | Browser | Server / database |
+| Operation | Proposed RLS condition | Effect |
 |---|---|---|
-| Sponsor authentication | Provide the sign-in and sign-out interaction and use Supabase Auth with the public project configuration. Do not treat client-side route guards as authorization. | Validate the authenticated session before serving protected sponsor information. Supabase Auth and the database request context must provide the identity used for authorization. |
-| Reading authorized listings | May request listings through an authenticated, user-scoped Supabase client. The browser may display returned authorized data but must not enforce security by filtering on its own. | PostgreSQL RLS must limit results to rows owned by the authenticated user. Server routes or functions returning protected listings must verify the session and must not trust a sponsor ID from the browser. |
-| Creating and updating listings | Not enabled by this design: the brief does not specify sponsor create or update behavior. | Do not grant write access until requirements define it. If later authorized, enforce ownership in PostgreSQL RLS for both the row being changed and its resulting owner. |
-| Deleting listings | Not enabled by this design: deletion is not required by the brief. | Do not grant delete access unless requirements separately authorize it. |
-| Supabase public URL and publishable key | May be present in browser configuration; the checklist uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. These are public values, not authorization controls. | May also be used by trusted server code as appropriate. |
-| Supabase secret/service-role key | Must never appear in browser code, browser components, or the client bundle. Never use a `VITE_` prefix for this privileged secret. | Server-only if a trusted operation requires it. Privileged keys can bypass RLS; do not use them for sponsor-scoped listing access in place of the authenticated user's RLS-protected context. No privileged key is needed by this proposed read design. |
+| `SELECT` | `USING (auth.uid() IS NOT NULL AND sponsor_id = auth.uid())` | A signed-in sponsor sees only their own listing rows. Other sponsors' rows are not returned. |
+| `INSERT` | `WITH CHECK (auth.uid() IS NOT NULL AND sponsor_id = auth.uid())` | A sponsor can create only a row owned by their authenticated user ID. A forged owner ID is rejected. |
+| `UPDATE` | `USING (auth.uid() IS NOT NULL AND sponsor_id = auth.uid())` **and** `WITH CHECK (auth.uid() IS NOT NULL AND sponsor_id = auth.uid())` | The existing row must belong to the sponsor and the resulting row must still belong to that sponsor; ownership cannot be transferred by changing `sponsor_id`. |
+| `DELETE` | `USING (auth.uid() IS NOT NULL AND sponsor_id = auth.uid())` | A sponsor can delete only a row they own, **if** deletion is authorized as a product feature. |
 
-No real environment variable values or credentials belong in this document. Appropriate RLS policies must be enabled before browser access to private sponsor listings.
+**Authorization boundary:** Database RLS, not React filtering or a hidden UI control, must enforce access. Requests without a valid authenticated identity must not access private listings. Direct attempts to read or modify another sponsor's listing must be denied by the database, even when someone bypasses the dashboard UI. Database grants and policies must be configured consistently; RLS does not replace authentication, session validation, or least-privilege database access.
+
+**Important limitation:** The brief does not define how a user is designated or approved as a *sponsor*. Ownership-based RLS alone distinguishes users, not approved sponsors. Before enabling `INSERT`, `UPDATE`, or `DELETE`, confirm the sponsor authorization model and whether each write operation is permitted. The original brief explicitly requires read access; write policies above are proposed because the schema assessment asks for migration-ready boundaries.
+
+## 4. Server vs. Browser Operation Map
+
+| Operation or value | Browser responsibility | Server / database responsibility |
+|---|---|---|
+| Sign in / sign out | Show email/password sign-in and sign-out UI; use only public Supabase configuration. | Supabase Auth establishes and invalidates sessions; protected server routes validate session identity. |
+| List/read authorized property listings | Render returned rows; never enforce access by filtering a full dataset in React. | A TanStack Start **server loader** obtains the user session, performs a user-scoped PostgreSQL/Supabase query, and returns only rows allowed by RLS. Do not trust a client-supplied sponsor ID. |
+| Create a property listing (proposed future capability) | Submit validated listing inputs; do not choose or assert the owner. | A TanStack Start **server action/function** validates the session and inputs, sets `sponsor_id` from the authenticated user, and inserts using the user-scoped database context. RLS `INSERT WITH CHECK` verifies ownership. Enable only when authorized. |
+| Update a property listing (proposed future capability) | Submit permitted field changes and listing ID; never submit privileged credentials. | A **server action/function** validates the session, checks the target listing through user-scoped access, and updates under RLS `UPDATE USING` and `WITH CHECK`; prevent unauthorized owner or audit-field changes. Enable only when authorized. |
+| Delete a property listing (proposed future capability) | Request deletion only if a confirmed feature exists. | A **server action/function** uses the validated session and owner-scoped RLS `DELETE USING`. Do not implement until authorized. |
+| Public Supabase configuration | `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` may be included in browser code. Public keys are not authorization controls. | May also use public configuration with a user-scoped session. RLS must be enabled before browser access to private data. |
+| Privileged credentials | **Never** use `SUPABASE_SECRET_KEY`, service-role keys, PostgreSQL passwords/connection strings, signing secrets, or private API keys in browser code or `VITE_` variables. | Keep secrets only in trusted server configuration. Do not use a service-role/privileged key for routine sponsor-scoped access because privileged access may bypass RLS. |
+
+**Data boundary:** The brief identifies hardcoded mock data in `src/components/dashboard/DealsList.tsx`, `PortfolioTable.tsx`, and `ProfileCard.tsx`. For **property listings**, the future implementation must read authorized PostgreSQL rows instead of browser mock listings. The brief does not define replacement data sources for every unrelated dashboard metric or profile field; do not invent them. Preserve the existing dashboard routes and responsive design.
+
+### Out of scope for this schema design
+
+- Property images, uploads, media storage, and image permissions.
+- Search, filtering, ranking, geolocation, and advanced discovery features.
+- Payments, investments, and an administrative management system.
+- Implementing SQL migrations, RLS policies, or authentication in this documentation step.
+- Replacing the dashboard design or deploying a production database as part of this design exercise.
+
+### Open questions before migrations and feature implementation
+
+1. Which proposed property fields are actually required by the client, and what validation limits apply (title length, country format, address privacy)?
+2. What does `price` represent, which currency is used, and should currency have its own column?
+3. What values may `status` contain, and what is its default or transition workflow?
+4. How are sponsor accounts designated, approved, or assigned listings? Is a separate sponsor role/table needed?
+5. Can more than one sponsor be authorized to view the same listing?
+6. Are sponsors permitted to create, edit, or delete listings? The original brief requires read access but does not explicitly authorize writes.
+7. What happens to owned listings if a sponsor's `auth.users` record is deleted?
+8. What validation, audit, and server-side timestamp update mechanism should the migration use?
+
+**Next step:** After these decisions are confirmed, translate this design into a PostgreSQL migration, grants, RLS policies, and tests demonstrating cross-sponsor isolation. No SQL `CREATE TABLE` statements are included here.
