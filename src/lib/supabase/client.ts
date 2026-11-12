@@ -1,5 +1,6 @@
 /** Browser-only Supabase client. NEVER import server.ts here. */
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
 export function createBrowserSupabaseClient(): SupabaseClient<Database> {
@@ -10,5 +11,11 @@ export function createBrowserSupabaseClient(): SupabaseClient<Database> {
     throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY')
   }
 
-  return createClient<Database>(url, publishableKey)
+  return createBrowserClient<Database>(url, publishableKey, {
+    cookieOptions: {
+      path: '/',
+      sameSite: 'lax',
+      secure: import.meta.env.PROD,
+    },
+  })
 }

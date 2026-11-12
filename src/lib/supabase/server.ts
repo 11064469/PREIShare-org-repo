@@ -1,22 +1,26 @@
 /**
  * Server-only Supabase helper for sponsor-scoped requests.
  * Import ONLY from TanStack Start server functions/loaders, never UI modules.
- *
- * The server reads the same public Supabase URL/publishable key from its
- * environment; it MUST NOT use SUPABASE_SECRET_KEY for ordinary listing access.
- * A privileged key could bypass RLS.
- *
- * Callers must securely obtain the user's access token from the validated
- * server-side auth/session flow. Never accept a token as trusted merely
- * because a browser submitted it. This helper verifies it with Supabase Auth.
+ * Uses public credentials with the request's verified user session so RLS applies.
  */
 import '@tanstack/react-start/server-only'
-import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import type { SupabaseClient, User } from '@supabase/supabase-js'
+import {
+  getCookies,
+  setCookie,
+  setResponseHeader,
+} from '@tanstack/react-start/server'
 import type { Database } from './types'
 
-export async function createServerSupabaseClient(
-  accessToken: string,
-): Promise<{ supabase: SupabaseClient<Database>; user: User }> {
+function setPrivateNoStoreHeaders() {
+  setResponseHeader('cache-control', 'private, no-store')
+}
+
+export async function createServerSupabaseClient(): Promise<{
+  supabase: SupabaseClient<Database>
+  user: User | null
+}> {
   if (typeof window !== 'undefined') {
     throw new Error('createServerSupabaseClient must run on the server')
   }
@@ -26,23 +30,66 @@ export async function createServerSupabaseClient(
   if (!url || !publishableKey) {
     throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY')
   }
-  if (!accessToken) {
-    throw new Error('Missing authenticated Supabase access token')
-  }
 
-  const supabase = createClient<Database>(url, publishableKey, {
-    global: { headers: { Authorization: `Bearer ${accessToken}` } },
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
+  setPrivateNoStoreHeaders()
+
+  const supabase = createServerClient<Database>(url, publishableKey, {
+    cookieOptions: {
+      path: '/',
+      sameSite: 'lax',
+      secure: import.meta.env.PROD,
+    },
+    cookies: {
+      getAll() {
+        return Object.entries(getCookies()).map(([name, value]) => ({
+          name,
+          value,
+        }))
+      },
+      setAll(cookies, headers) {
+        for (const { name, value, options } of cookies) {
+          setCookie(name, value, options)
+        }
+
+        if (headers['Cache-Control']) {
+          setResponseHeader('cache-control', headers['Cache-Control'])
+        }
+        if (headers.Expires) {
+          setResponseHeader('expires', headers.Expires)
+        }
+        if (headers.Pragma) {
+          setResponseHeader('pragma', headers.Pragma)
+        }
+
+        setPrivateNoStoreHeaders()
+      },
     },
   })
 
-  // Auth confirms the JWT belongs to a real user; Postgres RLS checks ownership.
-  const { data, error } = await supabase.auth.getUser(accessToken)
-  if (error || !data.user) {
-    throw new Error('Unauthorized: invalid or expired Supabase session')
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession()
+  if (sessionError) {
+    throw sessionError
+  }
+  if (!sessionData.session) {
+    return { supabase, user: null }
+  }
+
+  // Verify the cookie-backed session with Auth; do not trust its stored user.
+  const { data, error } = await supabase.auth.getUser(
+    sessionData.session.access_token,
+  )
+  if (error) {
+    if (error.status === 401) {
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: 'local',
+      })
+      if (signOutError) {
+        throw signOutError
+      }
+      return { supabase, user: null }
+    }
+    throw error
   }
 
   return { supabase, user: data.user }
