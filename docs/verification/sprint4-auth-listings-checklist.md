@@ -2,6 +2,13 @@
 
 This checklist records repository evidence only where available. A migration file, source-code review, or successful build does not prove that the migration was applied to Supabase or that authentication and RLS work against a live project.
 
+## User-reported Sprint 4 test accounts
+
+- **User A email:** `dorcask.kuwa17@gmail.com`
+- **User B email supplied:** `dorcask.kuwa17@gmail.com`
+- **Important limitation:** The same email was supplied for both users. The distinctness of the Auth accounts is unconfirmed, so this report does not count the User B isolation result as a verified two-user test.
+- No passwords, API keys, access tokens, or secret values are included.
+
 ## Verification checklist
 
 ### 1. Migration applied and `property_listings` table exists
@@ -16,7 +23,7 @@ This checklist records repository evidence only where available. A migration fil
 
 - **Test description:** Verify RLS is enabled on the deployed table and the SELECT, INSERT, UPDATE, and DELETE own-row policies are installed.
 - **Expected result:** RLS is enabled; all four policies apply to authenticated users and constrain rows by `sponsor_id = auth.uid()`.
-- **Actual observed result:** The migration declares `ENABLE ROW LEVEL SECURITY` and the four ownership policies. The design review's applied-project and cross-user verification checklist items remain unchecked; deployed policy state is unverified.
+- **Actual observed result:** The migration declares `ENABLE ROW LEVEL SECURITY` and the four ownership policies. The design review's applied-project verification item remains unchecked; deployed policy state is unverified.
 - **Status:** NOT TESTED
 - **Evidence / notes:** Static migration review confirms intended SQL only. Verify `pg_class.relrowsecurity` and `pg_policies` in the target database. The policies check row ownership; they do **not** establish a separate approved-sponsor role.
 
@@ -24,39 +31,47 @@ This checklist records repository evidence only where available. A migration fil
 
 - **Test description:** Using a test account, sign up User A, sign out, then log in with the same account.
 - **Expected result:** Signup follows the project's configured email-confirmation behavior; signout clears the session; valid credentials restore a session on login.
-- **Actual observed result:** No live Supabase Auth interaction or test-account evidence was provided.
-- **Status:** NOT TESTED
-- **Evidence / notes:** Test manually against the intended Supabase project. Do not record credentials, tokens, or confirmation links here.
+- **Actual observed result:** User reported this test as PASS for User A (`dorcask.kuwa17@gmail.com`). No step-by-step observations, logs, or screenshots were supplied.
+- **Status:** PASS
+- **Evidence / notes:** User-reported result only. No credentials, tokens, or confirmation links are recorded here.
 
 ### 4. Protected dashboard redirect when signed out
 
 - **Test description:** Open a dashboard route with no authenticated session.
 - **Expected result:** The server-side session check redirects the visitor to `/auth/login` before dashboard content is shown.
-- **Actual observed result:** The dashboard route source includes a `beforeLoad` check using `getCurrentUser()` and redirects when it returns no user. No browser or HTTP test of the redirect was provided.
-- **Status:** NOT TESTED
-- **Evidence / notes:** Source inspection is not an end-to-end test. Verify by requesting a protected route with cleared auth cookies.
+- **Actual observed result:** User reported the signed-out redirect test as PASS. The expected redirect is `/auth/login`; no browser trace, response status, or screenshot was supplied.
+- **Status:** PASS
+- **Evidence / notes:** User-reported result. The dashboard route also contains a server-side `beforeLoad` check using `getCurrentUser()`, but source inspection alone is not the live test evidence.
 
-### 5. User A creates and reads a real listing
+### 5. User A creates a real listing
 
-- **Test description:** As authenticated User A, create a listing and then load the listings page.
-- **Expected result:** The listing is saved in PostgreSQL with User A's authenticated ID as `sponsor_id` and is returned in User A's listing results.
-- **Actual observed result:** The server operation source calls `createListing` and `listListings` using the server Supabase client, and the listing page calls `listListings`. No live database write or read was demonstrated.
-- **Status:** NOT TESTED
-- **Evidence / notes:** Confirm in the target project using an ordinary user-scoped session, not a service-role key.
+- **Test description:** As authenticated User A, create a property listing.
+- **Expected result:** The listing is saved in PostgreSQL with User A's authenticated ID as `sponsor_id`.
+- **Actual observed result:** User reported that User A created a property successfully. No listing identifier, database confirmation, logs, or screenshot were supplied.
+- **Status:** PASS
+- **Evidence / notes:** User-reported result for `dorcask.kuwa17@gmail.com`. Confirm with ordinary user-scoped access, not a service-role key, if auditable database evidence is required.
+
+### 5a. User A reads a real listing
+
+- **Test description:** As authenticated User A, open the listings page and confirm the created property is returned.
+- **Expected result:** User A sees the real listing associated with User A's authenticated ID.
+- **Actual observed result:** User reported that User A read a property successfully. No listing identifier, response data, logs, or screenshot were supplied.
+- **Status:** PASS
+- **Evidence / notes:** User-reported result for `dorcask.kuwa17@gmail.com`. The application source uses `listListings`; live database evidence was not attached.
 
 ### 6. User B cannot read User A's listing
 
 - **Test description:** Sign in as a separate User B and attempt to retrieve User A's listing.
 - **Expected result:** User B receives no User A rows; PostgreSQL RLS enforces isolation independently of UI filtering.
-- **Actual observed result:** No two-user live RLS test evidence was provided.
+- **Actual observed result:** User marked this test PASS, but both User A and User B were reported with the same email (`dorcask.kuwa17@gmail.com`), and the supplied observation did not state whether User B could see User A's listing. A distinct second Auth identity and the visibility result therefore cannot be confirmed.
 - **Status:** NOT TESTED
-- **Evidence / notes:** Test with two distinct authenticated users and user-scoped requests. A privileged SQL Editor session is not evidence that RLS works for ordinary users.
+- **Evidence / notes:** Limitation: the two account fields have the same email and no direct visibility result was provided. Next investigation: confirm a distinct User B account, sign in with a separate user-scoped session, and query for User A's known listing. Handoff follow-up: record whether the row was returned (and a redacted query/result or screenshot) and verify the two authenticated user IDs differ. Do not use a privileged SQL Editor session as proof of ordinary-user RLS.
 
 ### 7. Optional reverse ownership test
 
 - **Test description:** As User B, create a listing and verify User B can read it while User A cannot.
 - **Expected result:** The listing is owned by User B and visible only in User B's authorized results.
-- **Actual observed result:** No reverse-ownership test evidence was provided.
+- **Actual observed result:** No reverse-ownership observation was provided.
 - **Status:** NOT TESTED
 - **Evidence / notes:** Optional but recommended to catch asymmetric test/setup mistakes.
 
@@ -87,7 +102,8 @@ This checklist records repository evidence only where available. A migration fil
 ## Manual confirmation still required
 
 - Confirm the migration is applied to the intended Supabase project and the table exists.
-- Verify deployed RLS state and all four policies, then test access using separate User A and User B accounts.
-- Exercise signup, configured email confirmation, signout, login, and the signed-out dashboard redirect.
-- Create/read a real listing as User A, verify User B isolation, and optionally run the reverse ownership test.
+- Verify deployed RLS state and all four policies.
+- Confirm User B is a distinct Auth account, then rerun the isolation test and explicitly record whether User B could see User A's listing.
+- If auditable evidence is required, retain redacted evidence for the user-reported PASS results: signup/confirmation/signout/login, signed-out redirect, and User A create/read.
+- Optionally run the reverse ownership test.
 - Repeat privileged-key checks for any deployment-specific browser assets and configuration before release.
