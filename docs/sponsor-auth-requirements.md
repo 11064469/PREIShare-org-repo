@@ -4,7 +4,7 @@
 
 PREIshare sponsors need to sign in securely, reach protected dashboard information, view property listings they are authorized to see, and sign out. Property listings must come from PostgreSQL rather than hardcoded listing data. The application must protect each sponsor's information and keep private credentials out of the browser.
 
-This document combines the original client story in [docs/requirements/sponsor-auth-and-listings-brief.md](requirements/sponsor-auth-and-listings-brief.md) with the planning lists supplied for this assignment. The original brief defines the product requirements; technical choices not specified there are identified as assumptions or open questions below.
+This document combines the original client story in [docs/requirements/sponsor-auth-and-listings-brief.md](requirements/sponsor-auth-and-listings-brief.md), the planning lists supplied for this assignment, and the supplemental sponsor property-creation requirement supplied for this document. The original brief defines the baseline product requirements; the supplemental requirement adds sponsor-owned property creation. Technical choices not specified by these requirements are identified as assumptions or open questions below.
 
 ## 2. Actors
 
@@ -31,7 +31,9 @@ This document combines the original client story in [docs/requirements/sponsor-a
 
 **FR-5 — Sponsor-specific authorization:** The application must return only property listings the authenticated sponsor is authorized to access. The authorization decision must be enforced by the server or database, not only by hiding or filtering rows in the browser.
 
-The original client brief does not specify property fields, listing creation or editing permissions, or a sponsor approval workflow. This requirements document therefore does not define those as product requirements.
+**FR-6 — Sponsor property creation:** A signed-in sponsor must be able to create a property listing. The application must validate the listing information and save the property in PostgreSQL. The server must determine the new property's `sponsor_id` from the authenticated sponsor's session, not from a sponsor ID submitted by the browser. PostgreSQL row-level security (RLS) must prevent a sponsor from creating a property owned by another sponsor.
+
+The original client brief does not specify property fields, listing editing or deletion permissions, or a sponsor approval workflow. This requirements document therefore does not define those as product requirements. FR-6 is the supplemental sponsor property-creation requirement supplied for this document.
 
 ## 5. Security Requirements
 
@@ -43,9 +45,11 @@ The original client brief does not specify property fields, listing creation or 
 
 **SEC-4 — Do not trust browser-supplied ownership:** A sponsor ID supplied by browser code or request data must not, by itself, authorize access to listings. The server must verify the authenticated identity and use the server/database authorization boundary to decide which listings can be returned.
 
-**SEC-5 — Protect private credentials:** Database passwords and connection strings, privileged Supabase keys, authentication signing secrets, private API keys, and other server-only environment values must not appear in browser-facing source or browser bundles.
+**SEC-5 — Enforce listing ownership on create:** When a sponsor creates a listing, the server must set its owner from the verified session. PostgreSQL RLS must reject an insert that attempts to assign the listing to another sponsor.
 
-**SEC-6 — Protect credentials in Git:** Real private credentials must not be added to Git-tracked files. Example environment files may contain placeholders only.
+**SEC-6 — Protect private credentials:** Database passwords and connection strings, privileged Supabase keys, authentication signing secrets, private API keys, and other server-only environment values must not appear in browser-facing source or browser bundles.
+
+**SEC-7 — Protect credentials in Git:** Real private credentials must not be added to Git-tracked files. Example environment files may contain placeholders only.
 
 ## 6. Out of Scope
 
@@ -65,11 +69,13 @@ These criteria describe observable behavior to verify. They are requirements, no
 3. **Signed-out dashboard access:** With no valid session, a request to `/dashboard` redirects to the login page and returns no protected dashboard data.
 4. **Signed-in dashboard access:** With a valid session, a sponsor can access the protected dashboard information that they are authorized to view.
 5. **Database-backed listing read:** With an authorized sponsor session and PostgreSQL listing data available, the application returns that sponsor's authorized listing data rather than hardcoded mock listings.
-6. **Cross-sponsor isolation:** With two distinct sponsor accounts and a listing owned by the first account, the second account's listing request does not return the first account's private listing.
-7. **No browser owner override:** Changing a sponsor ID in browser-controlled request data does not grant access to another sponsor's listing.
-8. **Sign-out:** After a sponsor signs out, a subsequent request to protected dashboard information is redirected to login or otherwise denied without returning protected data.
-9. **Credential exposure:** A review of browser-facing source and generated browser assets finds no database passwords or privileged credentials. A review of Git-tracked files finds no real private credentials; `.env.example` contains placeholders only.
-10. **Existing dashboard:** Authentication and listing changes do not replace the existing dashboard design or make its existing pages unusable. Verify the supported dashboard pages remain functional and responsive.
+6. **Sponsor property creation:** Sponsor A signs in and creates a property with valid listing information. The property is saved in PostgreSQL and its `sponsor_id` matches Sponsor A's authenticated identity.
+7. **Create ownership enforcement:** Sponsor B cannot create a property using Sponsor A's identity or access Sponsor A's private property by supplying its ID. Verify ownership enforcement with two distinct sponsor accounts and user-scoped sessions.
+8. **Cross-sponsor listing isolation:** With two distinct sponsor accounts and a listing owned by the first account, the second account's listing request does not return the first account's private listing.
+9. **No browser owner override:** Changing a sponsor ID in browser-controlled request data does not grant access to another sponsor's listing.
+10. **Sign-out:** After a sponsor signs out, a subsequent request to protected dashboard information is redirected to login or otherwise denied without returning protected data.
+11. **Credential exposure:** A review of browser-facing source and generated browser assets finds no database passwords or privileged credentials. A review of Git-tracked files finds no real private credentials; `.env.example` contains placeholders only.
+12. **Existing dashboard:** Authentication and listing changes do not replace the existing dashboard design or make its existing pages unusable. Verify the supported dashboard pages remain functional and responsive.
 
 Passing a source-code review or build alone does not demonstrate live database, authentication, or two-sponsor authorization behavior. Record observed results separately from implementation evidence.
 
@@ -83,7 +89,8 @@ The following are not settled by the original brief and require stakeholder or t
 - Which property fields are needed, and which are required?
 - Which listing status values and status transitions are allowed?
 - What does a listing's price represent, and which currency or currencies may be used?
-- Are sponsors allowed to create, edit, or delete listings? The original brief requires listing reads but does not approve these write permissions.
+- Which property fields and validation rules apply when a sponsor creates a listing?
+- Are sponsors allowed to edit or delete listings? The original brief does not specify these permissions.
 - What should happen to a sponsor's listings if their account is deleted?
 - Which email-confirmation behavior and sign-in error messages should users see?
 
